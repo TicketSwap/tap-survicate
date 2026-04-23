@@ -31,11 +31,11 @@ plugins:
       label: Start Date
       description: The earliest response date to sync (ISO 8601).
 
-    - name: survey_names
+    - name: survey_ids
       kind: array
-      label: Survey Names
+      label: Survey IDs
       description: >-
-        Optional list of survey names to sync. When set, only surveys whose name
+        Optional list of survey IDs to sync. When set, only surveys whose ID
         matches an entry in this list will be synced. When omitted, all surveys are synced.
 
     settings_group_validation:
@@ -43,7 +43,7 @@ plugins:
 
     config:
       api_key: $TAP_SURVICATE_API_KEY
-      survey_names: ["CSAT - Delighted"]
+      survey_ids: ["472f11b83a067afc"]
 
     select:
       - "*.*"
