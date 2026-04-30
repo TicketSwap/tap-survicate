@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import sys
-from typing import Any
-
 import urllib.parse
+from typing import Any
 
 import requests
 from singer_sdk.authenticators import APIKeyAuthenticator
@@ -44,6 +43,10 @@ class SurvicateStream(RESTStream):
     def url_base(self) -> str:
         """Return the API URL root."""
         return "https://data-api.survicate.com/v2"
+
+    @override
+    def get_new_paginator(self) -> SurvivatePaginator:
+        return SurvivatePaginator()
 
     @override
     @property
