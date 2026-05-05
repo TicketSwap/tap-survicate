@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import sys
-from urllib.parse import ParseResult, parse_qsl
 from typing import TYPE_CHECKING
+from urllib.parse import ParseResult, parse_qsl
 
 from tap_survicate.client import SurvicateStream
 from tap_survicate.schemas import (
@@ -87,17 +87,6 @@ class SurveyResponsesStream(SurvicateStream):
     schema = RESPONSES_SCHEMA
 
     @override
-    def _request(
-        self,
-        prepared_request: requests.PreparedRequest,
-        context: Context | None,
-    ) -> requests.Response:
-        if prepared_request.url:
-            prepared_request.url = prepared_request.url.replace("%2C", ",")
-        self.logger.info("SurveyResponsesStream request URL: %s", prepared_request.url)
-        return super()._request(prepared_request, context)
-
-    @override
     def get_url_params(
         self,
         context: Context | None,
@@ -129,6 +118,7 @@ class SurveyQuestionResponsesStream(SurvicateStream):
 
     name = "survey_question_responses"
     parent_stream_type = SurveyResponsesStream
+    state_partitioning_keys = []
     path = ""
     primary_keys = ("response_uuid", "question_id")
     replication_key = None
