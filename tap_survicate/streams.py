@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from urllib.parse import ParseResult, parse_qsl
 from typing import TYPE_CHECKING
 
 from tap_survicate.client import SurvicateStream
@@ -100,8 +101,11 @@ class SurveyResponsesStream(SurvicateStream):
     def get_url_params(
         self,
         context: Context | None,
-        _next_page_token: str | None,
+        _next_page_token: ParseResult | None,
     ) -> dict:
+        if _next_page_token:
+            # HATEOAS paginator passes a ParseResult; forward its query params verbatim
+            return dict(parse_qsl(_next_page_token.query))
         if context.get("attributes") is not None:
             return {"attributes[]": context["attributes"]}
         return {}
