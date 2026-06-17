@@ -8,8 +8,6 @@ from urllib.parse import ParseResult, parse_qsl
 
 from tap_survicate.client import SurvicateStream
 from tap_survicate.schemas import (
-    QUESTION_RESPONSES_SCHEMA,
-    QUESTIONS_SCHEMA,
     RESPONSES_SCHEMA,
     SURVEYS_SCHEMA,
 )
@@ -60,22 +58,6 @@ class SurveysStream(SurvicateStream):
         return row
 
 
-class SurveyQuestionsStream(SurvicateStream):
-    """Questions for a survey — child of SurveysStream."""
-
-    name = "survey_questions"
-    parent_stream_type = SurveysStream
-    path = "/surveys/{id}/questions"
-    primary_keys = ("id", "survey_id")
-    replication_key = None
-    schema = QUESTIONS_SCHEMA
-
-    @override
-    def post_process(self, row: dict, context: Context | None = None) -> dict | None:
-        row["survey_id"] = context.get("id")
-        return row
-
-
 class SurveyResponsesStream(SurvicateStream):
     """Responses for a survey — child of SurveysStream."""
 
@@ -90,45 +72,16 @@ class SurveyResponsesStream(SurvicateStream):
     def get_url_params(
         self,
         context: Context | None,
-        _next_page_token: ParseResult | None,
+        next_page_token: ParseResult | None,
     ) -> dict:
-        if _next_page_token:
+        if next_page_token:
             # HATEOAS paginator passes a ParseResult; forward its query params verbatim
-            return dict(parse_qsl(_next_page_token.query))
-        if context.get("attributes") is not None:
+            return dict(parse_qsl(next_page_token.query))
+        if context and context.get("attributes") is not None:
             return {"attributes[]": context["attributes"]}
         return {}
 
     @override
     def post_process(self, row: dict, context: Context | None = None) -> dict | None:
-        row["survey_id"] = context.get("id")
+        row["survey_id"] = context.get("id") if context else None
         return row
-
-    @override
-    def get_child_context(self, record: dict, context: Context | None = None) -> dict:
-        return {
-            "survey_id": record["survey_id"],
-            "response_uuid": record["uuid"],
-            "answers": record.get("answers") or [],
-        }
-
-
-class SurveyQuestionResponsesStream(SurvicateStream):
-    """Individual question answers — child of SurveyResponsesStream."""
-
-    name = "survey_question_responses"
-    parent_stream_type = SurveyResponsesStream
-    state_partitioning_keys = []
-    path = ""
-    primary_keys = ("response_uuid", "question_id")
-    replication_key = None
-    schema = QUESTION_RESPONSES_SCHEMA
-
-    @override
-    def get_records(self, context: Context | None) -> Iterable[dict]:
-        for answer in (context or {}).get("answers", []):
-            yield {
-                "survey_id": context["survey_id"],
-                "response_uuid": context["response_uuid"],
-                **answer,
-            }

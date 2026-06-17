@@ -52,9 +52,7 @@ class TapSurvicate(Tap):
     def discover_streams(self) -> list[streams.SurvicateStream]:
         return [
             streams.SurveysStream(self),
-            streams.SurveyQuestionsStream(self),
             streams.SurveyResponsesStream(self),
-            streams.SurveyQuestionResponsesStream(self),
         ]
 
 

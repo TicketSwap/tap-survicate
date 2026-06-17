@@ -32,25 +32,6 @@ SURVEYS_SCHEMA = th.PropertiesList(
     th.Property("attributes", th.ArrayType(th.StringType)),
 ).to_dict()
 
-QUESTIONS_SCHEMA = th.PropertiesList(
-    th.Property("id", th.IntegerType, required=True),
-    th.Property("survey_id", th.StringType),
-    th.Property("type", th.StringType),
-    th.Property("name", th.StringType),
-    th.Property("position", th.IntegerType),
-    th.Property("required", th.BooleanType),
-    th.Property(
-        "answers",
-        th.ArrayType(
-            th.ObjectType(
-                th.Property("id", th.IntegerType),
-                th.Property("name", th.StringType),
-                th.Property("position", th.IntegerType),
-            )
-        ),
-    ),
-).to_dict()
-
 RESPONSES_SCHEMA = th.PropertiesList(
     th.Property("uuid", th.StringType, required=True),
     th.Property("survey_id", th.StringType),
@@ -83,53 +64,22 @@ RESPONSES_SCHEMA = th.PropertiesList(
                 th.Property("question_type", th.StringType),
                 th.Property(
                     "answer",
-                    th.CustomType({
-                        "anyOf": [
-                            {"type": "string"},
-                            {
-                                "type": "object",
-                                "properties": {
-                                    "id": {"type": ["integer", "null"]},
-                                    "content": {"type": ["string", "null"]},
-                                    "comment": {"type": ["string", "null"]},
-                                    "translated_comment": {"type": ["string", "null"]},
-                                    "disclaimer_accepted": {"type": ["boolean", "null"]},
-                                    "rating": {"type": ["integer", "null"]},
-                                    "tag": {"type": ["string", "null"]},
-                                },
+                    th.CustomType(
+                        {
+                            "type": ["string", "object", "null"],
+                            "properties": {
+                                "id": {"type": ["integer", "null"]},
+                                "content": {"type": ["string", "null"]},
+                                "comment": {"type": ["string", "null"]},
+                                "translated_comment": {"type": ["string", "null"]},
+                                "disclaimer_accepted": {"type": ["boolean", "null"]},
+                                "rating": {"type": ["integer", "null"]},
+                                "tag": {"type": ["string", "null"]},
                             },
-                            {"type": "null"},
-                        ]
-                    }),
+                        }
+                    ),
                 ),
             )
         ),
     ),
-).to_dict()
-
-_ANSWER_TYPE = th.CustomType({
-    "anyOf": [
-        {"type": "string"},
-        {
-            "type": "object",
-            "properties": {
-                "id": {"type": ["integer", "null"]},
-                "content": {"type": ["string", "null"]},
-                "comment": {"type": ["string", "null"]},
-                "translated_comment": {"type": ["string", "null"]},
-                "disclaimer_accepted": {"type": ["boolean", "null"]},
-                "rating": {"type": ["integer", "null"]},
-                "tag": {"type": ["string", "null"]},
-            },
-        },
-        {"type": "null"},
-    ]
-})
-
-QUESTION_RESPONSES_SCHEMA = th.PropertiesList(
-    th.Property("response_uuid", th.StringType, required=True),
-    th.Property("survey_id", th.StringType),
-    th.Property("question_id", th.IntegerType, required=True),
-    th.Property("question_type", th.StringType),
-    th.Property("answer", _ANSWER_TYPE),
 ).to_dict()
