@@ -53,7 +53,6 @@ class SurvicateStream(RESTStream):
     def authenticator(self) -> APIKeyAuthenticator:
         """Return authenticator with Basic auth header."""
         return APIKeyAuthenticator(
-            stream=self,
             key="Authorization",
             value=f"Basic {self.config['api_key']}",
             location="header",

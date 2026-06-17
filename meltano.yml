@@ -43,7 +43,7 @@ plugins:
 
     config:
       api_key: $TAP_SURVICATE_API_KEY
-      survey_ids: ["472f11b83a067afc"]
+      survey_ids: ["472f11b83a067afc", "6e3f735d9f80236f"]
 
     select:
       - "*.*"
