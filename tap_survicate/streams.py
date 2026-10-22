@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import sys
 from typing import TYPE_CHECKING
-from urllib.parse import ParseResult, parse_qsl
 
 from tap_survicate.client import SurvicateStream
 from tap_survicate.schemas import (
@@ -19,6 +18,7 @@ else:
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+    from urllib.parse import ParseResult
 
     import requests
     from singer_sdk.helpers.types import Context
@@ -74,12 +74,9 @@ class SurveyResponsesStream(SurvicateStream):
         context: Context | None,
         next_page_token: ParseResult | None,
     ) -> dict:
-        if next_page_token:
-            # HATEOAS paginator passes a ParseResult; forward its query params verbatim
-            return dict(parse_qsl(next_page_token.query))
-        if context and context.get("attributes") is not None:
+        if not next_page_token and context and context.get("attributes") is not None:
             return {"attributes[]": context["attributes"]}
-        return {}
+        return super().get_url_params(context, next_page_token)
 
     @override
     def post_process(self, row: dict, context: Context | None = None) -> dict | None:

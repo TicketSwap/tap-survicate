@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 import urllib.parse
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import requests
 from singer_sdk.authenticators import APIKeyAuthenticator
@@ -15,6 +15,9 @@ if sys.version_info >= (3, 12):
     from typing import override
 else:
     from typing_extensions import override
+
+if TYPE_CHECKING:
+    from singer_sdk.helpers.types import Context
 
 
 class SurvivatePaginator(BaseHATEOASPaginator):
@@ -57,3 +60,13 @@ class SurvicateStream(RESTStream):
             value=f"Basic {self.config['api_key']}",
             location="header",
         )
+
+    @override
+    def get_url_params(
+        self,
+        context: Context | None,
+        next_page_token: urllib.parse.ParseResult | None,
+    ) -> dict:
+        if next_page_token:
+            return dict(urllib.parse.parse_qsl(next_page_token.query))
+        return {}
