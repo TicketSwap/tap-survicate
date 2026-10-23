@@ -28,14 +28,14 @@ license = "Apache-2.0"
 license-files = [ "LICENSE" ]
 requires-python = ">=3.10"
 dependencies = [
-    "singer-sdk~=0.53.6",
-    "requests~=2.32.3",
-    "typing-extensions>=4.5.0; python_version < '3.13'",
+    "singer-sdk~=0.54.9",
+    "requests~=2.34.2",
+    "typing-extensions>=4.16.0; python_version < '3.13'",
 ]
 
 [project.optional-dependencies]
 s3 = [
-    "s3fs>=2026.1.0",
+    "s3fs>=2026.9.0",
 ]
 
 [project.scripts]
@@ -47,13 +47,13 @@ dev = [
     { include-group = "test" },
 ]
 test = [
-    "pytest>=9",
-    "pytest-github-actions-annotate-failures>=0.3",
+    "pytest>=9.1.1",
+    "pytest-github-actions-annotate-failures>=0.4.2",
     "singer-sdk[testing]",
 ]
 typing = [
-    "mypy>=1.19.1",
-    "ty>=0.0.18",
+    "mypy>=2.4.0",
+    "ty>=0.0.91",
     "types-requests",
 ]
 
@@ -112,9 +112,9 @@ convention = "google"
 
 # This configuration can be used to customize tox environments
 [tool.tox]
-min_version = "4.43"
+min_version = "4.67.1"
 requires = [
-    "tox>=4.43",
+    "tox>=4.67.1",
     "tox-uv",
 ]
 env_list = [
