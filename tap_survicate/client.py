@@ -6,7 +6,6 @@ import sys
 import urllib.parse
 from typing import TYPE_CHECKING, Any
 
-import requests
 from singer_sdk.authenticators import APIKeyAuthenticator
 from singer_sdk.pagination import BaseHATEOASPaginator
 from singer_sdk.streams import RESTStream
@@ -17,6 +16,7 @@ else:
     from typing_extensions import override
 
 if TYPE_CHECKING:
+    import requests
     from singer_sdk.helpers.types import Context
 
 
@@ -24,6 +24,7 @@ class SurvivatePaginator(BaseHATEOASPaginator):
     """Stops when the response data array is empty, even if next_url is present."""
 
     def get_next_url(self, response: requests.Response) -> str | None:
+        """Return the next page URL, or None once the data array is empty."""
         body: dict[str, Any] = response.json()
         if not body.get("data"):
             return None
@@ -39,7 +40,7 @@ class SurvicateStream(RESTStream):
     """Survicate stream class."""
 
     records_jsonpath = "$.data[*]"
-    next_page_token_jsonpath = "$.pagination_data.next_url"
+    next_page_token_jsonpath = "$.pagination_data.next_url"  # noqa: S105
 
     @override
     @property
