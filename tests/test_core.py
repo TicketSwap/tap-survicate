@@ -16,22 +16,9 @@ SAMPLE_CONFIG = {
     # Production scoping to CSAT/NPS survey_ids lives in data-transformations.
 }
 
+pytestmark = pytest.mark.skipif(
+    not API_KEY,
+    reason="TAP_SURVICATE_API_KEY not set; skipping live integration tests",
+)
 
-def _build_test_class() -> type:
-    """Return the live SDK test suite, or a skipped placeholder without a key.
-
-    The Survicate API has no sandbox, so the standard SDK suite is a live
-    integration test. It runs when TAP_SURVICATE_API_KEY is available and is
-    skipped otherwise (e.g. CI without the secret) rather than failing.
-    """
-    if API_KEY:
-        return get_tap_test_class(tap_class=TapSurvicate, config=SAMPLE_CONFIG)
-
-    @pytest.mark.skip(reason="TAP_SURVICATE_API_KEY not set; skipping live integration tests")
-    class _SkippedTapSurvicate:
-        """Placeholder skipped when no API key is available."""
-
-    return _SkippedTapSurvicate
-
-
-TestTapSurvicate = _build_test_class()
+TestTapSurvicate = get_tap_test_class(tap_class=TapSurvicate, config=SAMPLE_CONFIG)
