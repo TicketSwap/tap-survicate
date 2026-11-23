@@ -11,12 +11,12 @@ concurrency:
 env:
   FORCE_COLOR: 1
 
-permissions:
-  contents: write  # Needed to upload artifacts to the release
-  id-token: write  # Needed for OIDC PyPI publishing
+permissions: {}
 
 jobs:
   build:
+    permissions:
+      contents: read
     name: Build Wheel and SDist
     runs-on: ubuntu-latest
     outputs:
@@ -33,6 +33,8 @@ jobs:
     name: Publish to PyPI
     runs-on: ubuntu-latest
     needs: [build]
+    permissions:
+      id-token: write  # Needed for OIDC PyPI publishing
     ## TODO: optionally provide the name of the environment for the trusted
     ## publisher on PyPI
     ## https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
